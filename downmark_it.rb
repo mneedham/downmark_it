@@ -82,12 +82,10 @@ module DownmarkIt
 
                 #pre
                 (raw/"pre").each do |pre|
-                  if pre.name == "pre"
                     language = pre.get_attribute("lang")
                     line_numbers = pre.get_attribute("line")
-                    line_html = line_numbers ? "linenos linenostart #{line_numbers}" : ""
-                    pre.swap("{% highlight #{language} #{line_html} %} #{pre.inner_html} {% endhighlight %}")
-                  end
+                    line_markdown = line_numbers ? " linenos linenostart #{line_numbers}" : ""
+                    pre.swap("{% highlight #{language}#{line_markdown} %}#{pre.inner_html}{% endhighlight %}")
                 end
 		
 		# unordered list
