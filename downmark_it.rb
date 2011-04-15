@@ -21,7 +21,7 @@ require 'Hpricot'
 module DownmarkIt
 	# TODO: Add nested unordered lists inside ordered list and vice versa support
 	def self.to_markdown(html)
-		raw = Hpricot(html.gsub(/(\n|\r|\t)/, ""))
+		raw = Hpricot(html)
 		
 		# headers
 		(raw/"/<h\d>/").each do |header|
@@ -66,10 +66,10 @@ module DownmarkIt
 			image.swap("![#{image['alt']}](#{image['src']}#{" \"#{image['title']}\"" if image['title']})")
 		end
 		
-		# blockqoute
-		(raw/"blockqoute").each do |qoute|
-			if qoute.name == "blockqoute"
-				qoute.swap("> #{nested_qoute(qoute)}")
+		# blockquote
+		(raw/"blockquote").each do |quote|
+			if quote.name == "blockquote"
+				quote.swap("> #{nested_quote(quote)}")
 			end
 		end
 		
@@ -79,6 +79,16 @@ module DownmarkIt
 				code.swap("``#{code.inner_html}``")
 			end
 		end
+
+                #pre
+                (raw/"pre").each do |pre|
+                  if pre.name == "pre"
+                    language = pre.get_attribute("lang")
+                    line_numbers = pre.get_attribute("line")
+                    line_html = line_numbers ? "linenos linenostart #{line_numbers}" : ""
+                    pre.swap("{% highlight #{language} #{line_html} %} #{pre.inner_html} {% endhighlight %}")
+                  end
+                end
 		
 		# unordered list
 		(raw/"ul").each do |ul|
@@ -128,13 +138,13 @@ module DownmarkIt
 	end
 	
 	private
-	def self.nested_qoute(qoute)
-		nqoute = qoute.at("blockqoute")
-		unless(nqoute.nil?)
-			nnqoute = nested_qoute(nqoute)
-			"> #{nnqoute}"
+	def self.nested_quote(quote)
+		nquote = quote.at("blockquote")
+		unless(nquote.nil?)
+			nnquote = nested_quote(nquote)
+			"> #{nnquote}"
 		else
-			qoute.inner_html
+			quote.inner_html
 		end
 	end
 	
