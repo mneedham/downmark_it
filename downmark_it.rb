@@ -63,7 +63,9 @@ module DownmarkIt
 		
 		# image
 		(raw/"img").each do |image|
-			image.swap("![#{image['alt']}](#{image['src']}#{" \"#{image['title']}\"" if image['title']})")
+                        if(image.parent.name != "div")
+                          image.swap("![#{image['alt']}](#{image['src']}#{" \"#{image['title']}\"" if image['title']})")
+                        end
 		end
 		
 		# blockquote
@@ -82,7 +84,7 @@ module DownmarkIt
 
                 #pre
                 (raw/"pre").each do |pre|
-                    language = pre.get_attribute("lang")
+                    language = pre.get_attribute("lang") || "text"
                     line_numbers = pre.get_attribute("line")
                     line_markdown = line_numbers ? " linenos linenostart #{line_numbers}" : ""
                     pre.swap("{% highlight #{language}#{line_markdown} %}#{pre.inner_html}{% endhighlight %}")
