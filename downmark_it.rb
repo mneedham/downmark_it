@@ -68,12 +68,12 @@ module DownmarkIt
                         end
 		end
 		
-		# blockquote
-		(raw/"blockquote").each do |quote|
-			if quote.name == "blockquote"
-				quote.swap("> #{nested_quote(quote)}")
-			end
-		end
+                # blockquote
+                (raw/"blockquote").each do |quote|
+                  if quote.name == "blockquote"
+                    quote.swap("> #{quote.inner_html.gsub(/\r\n\r\n/, "\r\n>\r\n")}")
+                  end
+                end
 		
 		# code
 		(raw/"code").each do |code|
@@ -138,15 +138,15 @@ module DownmarkIt
 	end
 	
 	private
-	def self.nested_quote(quote)
-		nquote = quote.at("blockquote")
-		unless(nquote.nil?)
-			nnquote = nested_quote(nquote)
-			"> #{nnquote}"
-		else
-			quote.inner_html
-		end
-	end
+        def self.nested_quote(quote)
+          nquote = quote.at("blockquote")
+          unless(nquote.nil?)
+            nnquote = nested_quote(nquote)
+            "> #{nnquote}"
+          else
+            quote.inner_html
+          end
+        end
 	
 	def self.nested_ul(li, level)
 		ul = li.at("ul")

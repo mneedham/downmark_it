@@ -135,4 +135,26 @@ describe "downmark_it" do
       EOS
     end
   end
+  
+  describe "blockquote tag" do
+    it "should be converted into blockquote syntax" do
+      input = <<-EOS
+      <blockquote>\r\njust do it\r\n</blockquote>
+      EOS
+
+      DownmarkIt.to_markdown(input).should == <<-EOS
+      > \r\njust do it\r\n
+      EOS
+    end
+
+    it "should put the blockquote syntax in front of both lines of a multi paragraph quote" do
+      input = <<-EOS
+      <blockquote>\r\nThis is the first line\r\n\r\nAnd this is the second line\r\n</blockquote>
+      EOS
+
+      DownmarkIt.to_markdown(input).should == <<-EOS
+      > \r\nThis is the first line\r\n>\r\nAnd this is the second line\r\n
+      EOS
+    end
+  end
 end
